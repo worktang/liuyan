@@ -1,0 +1,174 @@
+2019-01-05 16:19:20
+
+<?php
+session_start();
+	include("conn.php");
+if(isset($_GET["page"]))
+{
+	$page=$_GET["page"];
+}
+else
+{
+	$page=1;
+}
+$pagesize=5;	//每页显示的数量
+$start=($page-1)*$pagesize;//从那条数据开始
+$sql1="select a.*,b.name,b.data from roc a,user b where a.uid = b.id limit {$start},{$pagesize}";
+$sreg=mysql_query($sql1);
+
+
+$sql="select * from roc";
+$reg=mysql_query($sql);
+$rows=mysql_num_rows($reg);
+$pagenum=ceil($rows/$pagesize);
+
+
+if(isset($_POST['submit']))
+{
+	$id=$_SESSION['id'];
+	$liu=$_POST['liu'];
+	$sql2="insert into roc(uid,neiron) value ($id,'$liu')";
+	$regg=mysql_query($sql2);
+	if($reg)
+	{
+		echo "<script>alert('留言成功');window.location.href='liuy.php';</script>";
+	}
+	else{
+		echo "<script>alert('留言失败');window.location.href='liuy.php';</script>";
+	}
+}
+
+
+//删除功能
+if(isset($_GET['xid']))
+{
+	$xid=$_GET['xid'];
+	$regs=mysql_query("delete from roc where id=$xid");
+	if($regs)
+	{
+		echo "<script>alert('删除成功');window.location.href='liuy.php';</script>";
+	}
+}
+
+
+
+
+
+
+//删除功能
+?>
+<style type="text/css">
+	.a{
+		margin-left: 20px;
+		font-size: 10px;
+	}
+</style>
+<html>
+	<head>
+		<title></title>
+	</head>
+	<body>
+		<div style="height:500px; width:1000px; margin: auto;">
+			<?php
+				while($row=mysql_fetch_array($sreg))
+				{
+
+
+					echo "<p style='color:red;'>".$row['name']."</p>";
+					echo "</tr>";
+					echo "<tr align='center'>";
+						echo "<a>".$row["neiron"]."</a>";
+						echo "<a class='a'>".$row['data']."</a>";	
+						if($row['uid']==$_SESSION['id'])
+						{
+							 echo "<a href='liuy.php?xid=".$row['id']."'>删除</a>";
+						}
+
+
+				}
+			?>
+				 	<p>
+				 		<?php
+				 		 if($page==1)
+						 {
+						 	echo "首页&nbsp&nbsp";
+						 }
+						 else{
+						 	echo "<a href=index.php?page=1>首页&nbsp&nbsp</a>";
+						 }
+						  if($page==1)
+						 {
+						 	echo "上一页&nbsp&nbsp";
+						 }
+						 else{
+						 	echo "<a href=index.php?page=".($page-1).">上一页&nbsp&nbsp</a>";
+						 }
+						   if($page==$pagenum)
+						 {
+						 	echo "下一页&nbsp&nbsp";
+						 }
+						 else
+							 {
+							 	echo "<a href=index.php?page=".($page+1).">下一页&nbsp&nbsp</a>";
+							 }
+						  if($page==$pagenum)
+							 {
+							 	echo "末页&nbsp&nbsp";
+							 }
+						 else
+							 {
+							 	echo "<a href=index.php?page=".$pagenum.">末页&nbsp&nbsp</a>";
+							 }
+				 		?>
+		</div>
+				<center>
+		<form action="" method="post">
+			<textarea name="liu" style="resize: none; width: 80%; height: 100px;"></textarea>
+			<br />
+			<input type="submit" name="submit" value="留言"/><a href="userinfo.php">个人中心</a>
+		</form>
+		</center>
+	</body>
+</html>
+
+
+
+2.<?php
+session_start();
+if(!isset($_SESSION['username'])){
+	echo "<script>alert('没有登录,请登录');window.location.href='denlu.php';</script>";
+}
+include("conn.php");
+	$id=$_SESSION['id'];
+	$sql="select * from user where id=$id";
+	$infore=mysql_query($sql);
+?>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			.xx{
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+			<div class="xx">
+				<?php
+					while ($rows=mysql_fetch_array($infore)) {						
+							echo "<p>姓名：".$rows['name']."</p>";
+						echo "<p>年龄：".$rows['age']."</p>";
+						if($rows['sex']==0){
+							echo "<p>性别：女</p>";
+						}elseif($rows['sex']==1)
+						{
+							echo "<p>性别：男</p>";
+						}		
+						echo "<p>电话：".$rows['tel']."</p>";
+					}
+				?>
+			</div>
+	</body>
+</html>
